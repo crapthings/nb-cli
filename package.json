@@ -2,7 +2,16 @@
   "name": "@crapthings/nb-cli",
   "version": "1.0.0",
   "description": "Nano Banana (Google Gemini Image) CLI Tool",
-  "main": "index.js",
+  "bin": {
+    "nb": "./bin/nb.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "static",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/crapthings/nb-cli.git"
@@ -36,9 +45,6 @@
     "chai": "^6.2.2",
     "mocha": "^11.7.5",
     "standard": "^17.1.2"
-  },
-  "bin": {
-    "nb": "./bin/nb.js"
   },
   "standard": {
     "env": [

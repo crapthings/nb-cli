@@ -19,11 +19,23 @@
 - [Google Gemini API Key](https://aistudio.google.com/app/apikey)
 
 ### 2. Installation
+
+**Using NPM (Global):**
+```bash
+npm install -g @crapthings/nb-cli
+```
+
+**Using NPX (No installation):**
+```bash
+npx @crapthings/nb-cli generate "A futuristic banana"
+```
+
+**From Source:**
 ```bash
 git clone https://github.com/crapthings/nb-cli.git
 cd nb-cli
 npm install
-npm link # To use 'nb' command globally
+npm link # To use 'nb' command locally
 ```
 
 ### 3. Configuration
