@@ -1,6 +1,6 @@
 {
   "name": "@crapthings/nb-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nano Banana (Google Gemini Image) CLI Tool",
   "bin": {
     "nb": "./bin/nb.js"
