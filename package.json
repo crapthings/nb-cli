@@ -1,0 +1,48 @@
+{
+  "name": "@crapthings/nb-cli",
+  "version": "1.0.0",
+  "description": "Nano Banana (Google Gemini Image) CLI Tool",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crapthings/nb-cli.git"
+  },
+  "scripts": {
+    "test": "mocha test/**/*.test.js",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "keywords": [
+    "cli",
+    "ai",
+    "gemini",
+    "image-generation",
+    "nano-banana-2.0",
+    "nano-banana-pro",
+    "nano-banana",
+    "nanobanana"
+  ],
+  "author": "crapthings",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "commander": "^14.0.3",
+    "dotenv": "^17.3.1",
+    "mime": "^3.0.0",
+    "nanoid": "^3.3.8"
+  },
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "standard": "^17.1.2"
+  },
+  "bin": {
+    "nb": "./bin/nb.js"
+  },
+  "standard": {
+    "env": [
+      "mocha"
+    ]
+  }
+}
