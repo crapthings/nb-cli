@@ -39,10 +39,15 @@ npm link # To use 'nb' command locally
 ```
 
 ### 3. Configuration
-Create a `.env` file in the project root:
-```env
-GEMINI_API_KEY=your_api_key_here
+
+To use this CLI, you need a **Google Gemini API Key**.
+- **Get one for free at**: [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+Set the key in your shell environment:
+```bash
+export GEMINI_API_KEY=your_api_key_here
 ```
+*(Alternatively, for local development, you can still create a `.env` file in the project root)*
 
 ---
 

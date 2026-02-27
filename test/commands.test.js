@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { expect } = require('chai')
 const { generateCommand, editCommand } = require('../src/commands')
 

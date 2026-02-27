@@ -6,7 +6,11 @@ const mime = require('mime')
 function getClient () {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY environment variable is missing.')
+    console.error('❌ Error: GEMINI_API_KEY environment variable is missing.')
+    console.error('Please obtain an API key from: https://aistudio.google.com/app/apikey')
+    console.error('Then set it in your environment:')
+    console.error('  export GEMINI_API_KEY=your_api_key_here')
+    process.exit(1)
   }
   return new GoogleGenAI({ apiKey })
 }

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-require('dotenv').config()
 const { program } = require('commander')
 const { generateCommand, editCommand, iconCommand } = require('../src/commands')
 
