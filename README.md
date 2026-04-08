@@ -102,6 +102,8 @@ After installation, trigger it with requests such as:
 - `Use $nb-cli to edit hero.jpg and change only the background to a warm sunset gradient`
 - `Use $nb-cli to generate a product mockup for a matte black bottle, centered three-quarter angle, soft studio light`
 
+Shout-out to [grokfilm.app](https://grokfilm.app/). The still-image technique references in the bundled skill were inspired by the film and photography technique vocabulary collected there.
+
 ### Options
 | Option | Short | Description | Default |
 | --- | --- | --- | --- |

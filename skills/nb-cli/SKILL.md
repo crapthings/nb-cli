@@ -7,6 +7,8 @@ description: Generate and edit still images using the Nano Banana (Gemini) CLI t
 
 Nano Banana CLI Tool — Generate and edit images with the power of Google Gemini models directly from your terminal.
 
+The bundled still-image technique references were inspired by the film and photography vocabulary collected at `https://grokfilm.app/`.
+
 Example trigger requests:
 - `Use $nb-cli to generate a 16:9 SaaS hero image with soft daylight and editorial composition`
 - `Use $nb-cli to create a minimalist coffee cup icon for my app`
