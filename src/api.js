@@ -1,7 +1,77 @@
-const { GoogleGenAI } = require('@google/genai')
-const fs = require('fs')
-const path = require('path')
-const mime = require('mime')
+import fs from 'node:fs'
+import path from 'node:path'
+import { GoogleGenAI } from '@google/genai'
+import mime from 'mime'
+
+function detectImageExtension (buffer) {
+  if (buffer.length >= 8 &&
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4E &&
+    buffer[3] === 0x47 &&
+    buffer[4] === 0x0D &&
+    buffer[5] === 0x0A &&
+    buffer[6] === 0x1A &&
+    buffer[7] === 0x0A) {
+    return 'png'
+  }
+
+  if (buffer.length >= 3 &&
+    buffer[0] === 0xFF &&
+    buffer[1] === 0xD8 &&
+    buffer[2] === 0xFF) {
+    return 'jpg'
+  }
+
+  if (buffer.length >= 12 &&
+    buffer.subarray(0, 4).toString('ascii') === 'RIFF' &&
+    buffer.subarray(8, 12).toString('ascii') === 'WEBP') {
+    return 'webp'
+  }
+
+  if (buffer.length >= 6) {
+    const header = buffer.subarray(0, 6).toString('ascii')
+    if (header === 'GIF87a' || header === 'GIF89a') {
+      return 'gif'
+    }
+  }
+
+  return null
+}
+
+function normalizeExtension (extension) {
+  const normalized = extension.replace(/^\./, '').toLowerCase()
+  if (normalized === 'jpeg') return 'jpg'
+  return normalized
+}
+
+function getInputMimeType (inputPath) {
+  const mimeType = mime.getType(inputPath)
+  if (mimeType && mimeType.startsWith('image/')) {
+    return mimeType
+  }
+
+  throw new Error(`Unsupported input image format for ${inputPath}`)
+}
+
+function resolveOutputPath (outputPath, mimeType, buffer) {
+  const detectedExtension = detectImageExtension(buffer)
+  const mimeExtension = mimeType ? mime.getExtension(mimeType) : null
+  const actualExtension = detectedExtension || mimeExtension || 'png'
+  const normalizedExtension = normalizeExtension(actualExtension)
+  const existingExtension = path.extname(outputPath)
+
+  if (!existingExtension) {
+    return `${outputPath}.${normalizedExtension}`
+  }
+
+  const requestedExtension = normalizeExtension(existingExtension)
+  if (requestedExtension !== normalizedExtension) {
+    throw new Error(`Requested .${requestedExtension} output, but Nano Banana returned .${normalizedExtension}. Use a .jpg filename, or omit the extension to save the model's native format automatically.`)
+  }
+
+  return outputPath
+}
 
 function getClient () {
   const apiKey = process.env.GEMINI_API_KEY
@@ -61,15 +131,9 @@ async function generateImage (prompt, outputPath, options = {}) {
         if (part.inlineData) {
           const base64Image = part.inlineData.data
           const mimeType = part.inlineData.mimeType || 'image/png'
-          const extension = mime.getExtension(mimeType) || 'png'
-
-          // Ensure output path has an extension if it was randomly generated without one
-          let finalPath = outputPath
-          if (!path.extname(finalPath)) {
-            finalPath = `${finalPath}.${extension}`
-          }
-
-          fs.writeFileSync(finalPath, Buffer.from(base64Image, 'base64'))
+          const imageBuffer = Buffer.from(base64Image, 'base64')
+          const finalPath = resolveOutputPath(outputPath, mimeType, imageBuffer)
+          fs.writeFileSync(finalPath, imageBuffer)
           return finalPath
         }
       }
@@ -112,8 +176,7 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
 
   try {
     const base64Input = fs.readFileSync(inputPath, { encoding: 'base64' })
-    const ext = path.extname(inputPath).toLowerCase()
-    const mimeTypeInput = ext === '.png' ? 'image/png' : 'image/jpeg'
+    const mimeTypeInput = getInputMimeType(inputPath)
 
     const payload = {
       model: 'gemini-3.1-flash-image-preview',
@@ -142,14 +205,9 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
         if (part.inlineData) {
           const base64Image = part.inlineData.data
           const mimeTypeOut = part.inlineData.mimeType || 'image/png'
-          const extension = mime.getExtension(mimeTypeOut) || 'png'
-
-          let finalPath = outputPath
-          if (!path.extname(finalPath)) {
-            finalPath = `${finalPath}.${extension}`
-          }
-
-          fs.writeFileSync(finalPath, Buffer.from(base64Image, 'base64'))
+          const imageBuffer = Buffer.from(base64Image, 'base64')
+          const finalPath = resolveOutputPath(outputPath, mimeTypeOut, imageBuffer)
+          fs.writeFileSync(finalPath, imageBuffer)
           return finalPath
         }
       }
@@ -162,7 +220,10 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
   }
 }
 
-module.exports = {
+export {
+  detectImageExtension,
+  getInputMimeType,
+  resolveOutputPath,
   generateImage,
   editImage
 }

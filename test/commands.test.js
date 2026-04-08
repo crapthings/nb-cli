@@ -1,6 +1,6 @@
-require('dotenv').config()
-const { expect } = require('chai')
-const { generateCommand, editCommand } = require('../src/commands')
+import 'dotenv/config'
+import { expect } from 'chai'
+import { editCommand, generateCommand } from '../src/commands.js'
 
 describe('CLI Commands', () => {
   it('should have generateCommand', () => {

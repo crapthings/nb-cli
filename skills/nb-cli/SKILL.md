@@ -11,7 +11,7 @@ Nano Banana CLI Tool — Generate and edit images with the power of Google Gemin
 
 ### 1. Image Generation
 Turn prompts into visuals using `nb generate <prompt>`.
-- Use `-o, --output <path>` for a specific path (otherwise generates a random 6-char `.png`).
+- Use `-o, --output <path>` for a specific path (otherwise generates a random 6-char `.jpg` filename).
 - Use `-s, --size <size>` to set resolution (`512` (default), `1k`, `2k`, `4k`).
 - Use `-a, --aspect-ratio <ratio>` for your desired format (e.g., `16:9`, `21:9`).
 
@@ -33,7 +33,7 @@ Modify existing images using `nb edit <image_path> <prompt>`.
 When a user asks to generate or edit an image, follow these steps:
 1. Identify the command (`generate`, `icon`, or `edit`).
 2. Extract parameters (prompt, output path, size, aspect ratio).
-3. If no output path is given, note that the tool will generate a random name.
+3. If no output path is given, note that the tool will generate a random `.jpg` filename.
 4. Execute the command using `run_shell_command`.
 
 ### Example

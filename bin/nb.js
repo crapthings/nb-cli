@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { program } = require('commander')
-const { generateCommand, editCommand, iconCommand } = require('../src/commands')
+import { program } from 'commander'
+import { editCommand, generateCommand, iconCommand } from '../src/commands.js'
 
 program
   .name('nb')

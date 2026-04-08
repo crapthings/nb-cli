@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-04-08
+
+### Changed
+- **Migrated to ESM**: Converted the CLI entrypoint, source files, and tests from CommonJS to ECMAScript modules for compatibility with current `nanoid` and `mime` releases.
+- **Updated Dependencies**: Bumped `@google/genai`, `dotenv`, `mime`, and `nanoid` to their current versions used by the project.
+- **JPEG-First Output Guidance**: The CLI now defaults generated filenames to `.jpg`, and the documentation consistently instructs users to pass `.jpg` filenames when using `-o`.
+
+### Fixed
+- **Real Format Validation**: The CLI now validates that a user-supplied output extension matches the image bytes actually returned by Nano Banana instead of silently saving mismatched files.
+- **Automatic Extension Handling**: When no output extension is provided, the CLI appends the model's actual output format automatically.
+- **Edit Input MIME Detection**: `nb edit` now derives the input image MIME type from the source file path instead of treating nearly all inputs as JPEG.
+- **Documentation Accuracy**: Removed outdated `.env` runtime guidance and clarified current output-format behavior for the Nano Banana flow.
+
 ## [1.0.2] - 2026-02-27
 
 ### Changed
