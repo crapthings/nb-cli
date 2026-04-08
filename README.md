@@ -86,6 +86,22 @@ nb generate "A clean SaaS dashboard hero image with floating analytics cards, so
 
 You can then drop the generated image straight into your repo while your coding agent continues implementing the page.
 
+### Install The `nb-cli` Skill
+If you use Codex skills, you can install the bundled `nb-cli` skill from this repo with:
+
+```bash
+npx skills add https://github.com/crapthings/nb-cli --skill nb-cli
+```
+
+This installs the `nb-cli` skill so your agent can use the CLI with the repo's prompt guidance and image-generation references.
+
+After installation, trigger it with requests such as:
+
+- `Use $nb-cli to generate a 16:9 SaaS hero image with soft daylight and editorial composition`
+- `Use $nb-cli to create a minimalist coffee cup icon for my app`
+- `Use $nb-cli to edit hero.jpg and change only the background to a warm sunset gradient`
+- `Use $nb-cli to generate a product mockup for a matte black bottle, centered three-quarter angle, soft studio light`
+
 ### Options
 | Option | Short | Description | Default |
 | --- | --- | --- | --- |
