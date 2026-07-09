@@ -10,7 +10,7 @@
 
 ## 🌟 Overview
 
-`nb-cli` is a lightweight command-line interface for the **Nano Banana** (Gemini 3.1 Flash Image Preview) model. It allows you to create high-quality images from text prompts and perform sophisticated image editing by providing natural language instructions alongside an existing image.
+`nb-cli` is a lightweight command-line interface for **Nano Banana** Gemini image models. It allows you to create high-quality images from text prompts and perform sophisticated image editing by providing natural language instructions alongside an existing image.
 
 Use `.jpg` output filenames when you pass `-o`. If you omit the extension, `nb-cli` will save using the model's native output format automatically.
 
@@ -59,6 +59,12 @@ Create a brand new image from a text prompt.
 
 ```bash
 nb generate "A cyberpunk cat sitting on a neon-lit skyscraper" -o cyber-cat.jpg -s 1k -a 16:9
+```
+
+Use the lower-latency Lite image model when you only need 1K output:
+
+```bash
+nb generate "A playful banana mascot sticker" -o mascot.jpg --model lite
 ```
 
 ### Generate an Icon
@@ -110,6 +116,7 @@ Shout-out to [grokfilm.app](https://grokfilm.app/). The still-image technique re
 | `--output` | `-o` | Path to save the resulting image. Use a `.jpg` filename, or omit the extension to use the model's native format automatically. | `6-char-nanoid.jpg` |
 | `--size` | `-s` | Image resolution (512, 1k, 2k, 4k) | 512 |
 | `--aspect-ratio`| `-a` | Image aspect ratio (21:9, 16:9, 1:1, etc.) | 1:1 |
+| `--model` | `-m` | Model alias or ID. Use `lite` for `gemini-3.1-flash-lite-image`; Lite supports 1K output only. | `gemini-3.1-flash-image-preview` |
 
 #### Supported Aspect Ratios
 Ordered by the leading dimension (width) from largest to smallest:

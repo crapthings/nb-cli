@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-07-09
+
+### Added
+- **Model Selection**: Added `-m, --model <model>` to `nb generate`, `nb edit`, and `nb icon`, including `lite` aliases for `gemini-3.1-flash-lite-image`.
+
+### Fixed
+- **Lite Model Resolution Guard**: The Lite image model now defaults to `1K` output and rejects unsupported non-1K sizes before making an API request.
+
 ## [1.0.3] - 2026-04-08
 
 ### Changed

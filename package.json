@@ -1,15 +1,16 @@
 {
   "name": "@crapthings/nb-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Nano Banana (Google Gemini Image) CLI Tool",
   "bin": {
-    "nb": "./bin/nb.js"
+    "nb": "bin/nb.js"
   },
   "files": [
     "bin",
     "src",
     "static",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "repository": {

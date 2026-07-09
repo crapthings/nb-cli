@@ -1,5 +1,14 @@
 import { expect } from 'chai'
-import { detectImageExtension, getInputMimeType, resolveOutputPath } from '../src/api.js'
+import {
+  DEFAULT_MODEL,
+  LITE_MODEL,
+  detectImageExtension,
+  getInputMimeType,
+  normalizeImageSize,
+  resolveImageOptions,
+  resolveModel,
+  resolveOutputPath
+} from '../src/api.js'
 
 describe('API helpers', () => {
   it('detects JPEG bytes even when the claimed MIME type is PNG', () => {
@@ -30,5 +39,39 @@ describe('API helpers', () => {
 
   it('rejects unsupported edit input formats', () => {
     expect(() => getInputMimeType('/tmp/source.txt')).to.throw('Unsupported input image format')
+  })
+
+  it('uses the default Gemini image model when no model is requested', () => {
+    expect(resolveModel()).to.equal(DEFAULT_MODEL)
+    expect(resolveImageOptions({})).to.deep.equal({
+      model: DEFAULT_MODEL,
+      imageSize: '0.5K'
+    })
+  })
+
+  it('resolves the lite model alias to Gemini Flash Lite Image', () => {
+    expect(resolveModel('lite')).to.equal(LITE_MODEL)
+    expect(resolveImageOptions({ model: 'lite' })).to.deep.equal({
+      model: LITE_MODEL,
+      imageSize: '1K'
+    })
+  })
+
+  it('accepts the full lite model ID', () => {
+    expect(resolveImageOptions({ model: LITE_MODEL, size: '1k' })).to.deep.equal({
+      model: LITE_MODEL,
+      imageSize: '1K'
+    })
+  })
+
+  it('normalizes numeric image sizes', () => {
+    expect(normalizeImageSize('512')).to.equal('0.5K')
+    expect(normalizeImageSize('1024')).to.equal('1K')
+  })
+
+  it('rejects non-1K sizes for the lite model', () => {
+    expect(() => resolveImageOptions({ model: 'lite', size: '512' })).to.throw('only supports 1K')
+    expect(() => resolveImageOptions({ model: 'lite', size: '2k' })).to.throw('only supports 1K')
+    expect(() => resolveImageOptions({ model: 'lite', size: '4k' })).to.throw('only supports 1K')
   })
 })

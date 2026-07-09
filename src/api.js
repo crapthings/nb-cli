@@ -3,6 +3,19 @@ import path from 'node:path'
 import { GoogleGenAI } from '@google/genai'
 import mime from 'mime'
 
+const DEFAULT_MODEL = 'gemini-3.1-flash-image-preview'
+const LITE_MODEL = 'gemini-3.1-flash-lite-image'
+
+const MODEL_ALIASES = new Map([
+  ['default', DEFAULT_MODEL],
+  ['flash', DEFAULT_MODEL],
+  ['nano-banana', DEFAULT_MODEL],
+  ['nano-banana-2', DEFAULT_MODEL],
+  ['lite', LITE_MODEL],
+  ['flash-lite', LITE_MODEL],
+  ['nano-banana-lite', LITE_MODEL]
+])
+
 function detectImageExtension (buffer) {
   if (buffer.length >= 8 &&
     buffer[0] === 0x89 &&
@@ -85,18 +98,44 @@ function getClient () {
   return new GoogleGenAI({ apiKey })
 }
 
-async function generateImage (prompt, outputPath, options = {}) {
-  const ai = getClient()
-
-  // API expects 0.5K, 1K, 2K, 4K for imageSize
+function normalizeImageSize (size, model = DEFAULT_MODEL) {
   let imageSize = '0.5K'
-  if (options.size) {
-    imageSize = options.size.toUpperCase()
-    if (imageSize === '512') imageSize = '0.5K'
+  if (model === LITE_MODEL) {
+    imageSize = '1K'
   }
 
+  if (size) {
+    imageSize = size.toUpperCase()
+    if (imageSize === '512') imageSize = '0.5K'
+    if (imageSize === '1024') imageSize = '1K'
+  }
+
+  if (model === LITE_MODEL && imageSize !== '1K') {
+    throw new Error(`${LITE_MODEL} only supports 1K image output. Use --size 1k or omit --size.`)
+  }
+
+  return imageSize
+}
+
+function resolveModel (model) {
+  if (!model) return DEFAULT_MODEL
+  return MODEL_ALIASES.get(model.toLowerCase()) || model
+}
+
+function resolveImageOptions (options = {}) {
+  const model = resolveModel(options.model)
+  return {
+    model,
+    imageSize: normalizeImageSize(options.size, model)
+  }
+}
+
+async function generateImage (prompt, outputPath, options = {}) {
+  const ai = getClient()
+  const resolvedOptions = resolveImageOptions(options)
+
   const imageConfig = {
-    imageSize
+    imageSize: resolvedOptions.imageSize
   }
 
   if (options.aspectRatio) {
@@ -112,7 +151,7 @@ async function generateImage (prompt, outputPath, options = {}) {
   }
 
   const payload = {
-    model: 'gemini-3.1-flash-image-preview',
+    model: resolvedOptions.model,
     config,
     contents: [
       {
@@ -152,14 +191,10 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
     throw new Error(`Input image not found at ${inputPath}`)
   }
 
-  let imageSize = '0.5K'
-  if (options.size) {
-    imageSize = options.size.toUpperCase()
-    if (imageSize === '512') imageSize = '0.5K'
-  }
+  const resolvedOptions = resolveImageOptions(options)
 
   const imageConfig = {
-    imageSize
+    imageSize: resolvedOptions.imageSize
   }
 
   if (options.aspectRatio) {
@@ -179,7 +214,7 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
     const mimeTypeInput = getInputMimeType(inputPath)
 
     const payload = {
-      model: 'gemini-3.1-flash-image-preview',
+      model: resolvedOptions.model,
       config,
       contents: [
         {
@@ -221,9 +256,14 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
 }
 
 export {
+  DEFAULT_MODEL,
+  LITE_MODEL,
   detectImageExtension,
   getInputMimeType,
+  normalizeImageSize,
   resolveOutputPath,
+  resolveImageOptions,
+  resolveModel,
   generateImage,
   editImage
 }

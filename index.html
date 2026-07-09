@@ -66,7 +66,7 @@
   <header class="pt-32 pb-20 px-6 hero-gradient overflow-hidden">
     <div class="max-w-6xl mx-auto flex flex-col items-center text-center">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-olive-100 text-olive-700 text-xs font-semibold mb-8 border border-olive-200 uppercase tracking-widest">
-        v1.0.3 • Powered by Google Gemini
+        v1.0.4 • Powered by Google Gemini
       </div>
       <h1 class="text-5xl md:text-7xl font-extrabold text-olive-900 mb-8 tracking-tight max-w-4xl">
         AI-Native Image Engineering <span class="text-olive-500">from your CLI.</span>
@@ -115,7 +115,7 @@
           </div>
           <h3 class="text-lg font-bold text-olive-900 mb-3">Workflow Optimized</h3>
           <p class="text-olive-600 text-sm leading-relaxed">
-            Support for standard resolutions (512 to 4k) and multiple aspect ratios (21:9 to 1:8). Ready for CI/CD and automation scripts.
+            Support for standard resolutions (512 to 4k), Lite 1K output, and multiple aspect ratios (21:9 to 1:8). Ready for CI/CD and automation scripts.
           </p>
         </div>
       </div>
@@ -143,6 +143,9 @@
             &nbsp;&nbsp;--output library.jpg \<br>
             &nbsp;&nbsp;--aspect-ratio 21:9 \<br>
             &nbsp;&nbsp;--size 2k
+            <br><br>
+            <span class="text-olive-400"># Use the Lite image model for 1K output</span><br>
+            <span class="text-olive-500">nb</span> generate <span class="text-blue-600">"A playful banana mascot sticker"</span> --model lite
           </div>
         </div>
 
@@ -260,7 +263,8 @@
               Options:<br>
               &nbsp;&nbsp;-o, --output &lt;path&gt;<br>
               &nbsp;&nbsp;-s, --size &lt;size&gt;<br>
-              &nbsp;&nbsp;-a, --aspect-ratio &lt;ratio&gt;
+              &nbsp;&nbsp;-a, --aspect-ratio &lt;ratio&gt;<br>
+              &nbsp;&nbsp;-m, --model &lt;model&gt;
             </div>
           </div>
         </div>

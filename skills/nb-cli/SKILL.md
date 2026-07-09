@@ -22,6 +22,7 @@ Turn prompts into visuals using `nb generate <prompt>`.
 - Use `-o, --output <path>` for a specific path (otherwise generates a random 6-char `.jpg` filename).
 - Use `-s, --size <size>` to set resolution (`512` (default), `1k`, `2k`, `4k`).
 - Use `-a, --aspect-ratio <ratio>` for your desired format (e.g., `16:9`, `21:9`).
+- Use `-m, --model <model>` to pick a model alias or ID. Use `lite` for `gemini-3.1-flash-lite-image`; Lite supports `1k` output only.
 
 ### 2. Icon Generation
 Create 1:1 square icons using `nb icon <prompt>`.
@@ -52,7 +53,7 @@ Modify existing images using `nb edit <image_path> <prompt>`.
 ## Usage Guide
 When a user asks to generate or edit an image, follow these steps:
 1. Identify the command (`generate`, `icon`, or `edit`).
-2. Extract parameters (prompt, output path, size, aspect ratio).
+2. Extract parameters (prompt, output path, size, aspect ratio, model).
 3. Build or refine the prompt using only still-image vocabulary that materially helps.
 4. If no output path is given, note that the tool will generate a random `.jpg` filename.
 5. Execute the command in the repo shell.
