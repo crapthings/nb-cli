@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [2.0.0] - 2026-09-29
+
+### Breaking Changes
+- **Node.js Support**: Requires `^22.12.0 || ^24.0.0 || >=26.0.0`. Users on Node 18, 20, 23, or 25 must upgrade to a supported version before installing 2.0.0. CLI commands and API key configuration are unchanged.
+
+### Changed
+- **Updated Dependencies**: Upgraded `@google/genai` to `^2.24.0`, `commander` to `^15.0.0`, `dotenv` to `^18.0.4`, `mocha` to `^12.0.2`, and `nanoid` to `^6.0.1`.
+- **Node.js Requirements**: Updated the package engines and README to require `^22.12.0 || ^24.0.0 || >=26.0.0`, matching the upgraded dependencies.
+- **SDK Compatibility**: Confirmed that the existing `models.generateContent` integration remains compatible with Google GenAI SDK 2.x. Verified image generation with the live Lite model.
+
+### Added
+- **Release Command**: Added `npm run release -- <patch|minor|major|x.y.z>` with a read-only `--dry-run`, npm login and version checks, lint and tests, automatic version/changelog updates, and public npm publishing.
+- **SDK Regression Tests**: Added offline tests using the actual SDK to verify generation and editing request serialization, image configuration, and response saving.
+
+### Security
+- Updated transitive dependencies in the lockfile to resolve the reported vulnerabilities; `npm audit` reports zero vulnerabilities at the time of this update.
+
 ## [1.0.4] - 2026-07-09
 
 ### Added
