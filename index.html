@@ -1,293 +1,331 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>nb-cli | Generative AI Image CLI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            olive: {
-              50: '#f8f9f4',
-              100: '#f1f2e9',
-              200: '#e1e3d1',
-              300: '#cbd0ad',
-              400: '#abb282',
-              500: '#8c945b', // Primary Professional Olive
-              600: '#717849',
-              700: '#565c38',
-              800: '#3c4027',
-              900: '#222517',
-              950: '#11120b',
-            },
-          },
-          fontFamily: {
-            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-            mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
-          },
-        }
-      }
-    }
-  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="nb-cli brings Google Gemini image generation and editing to your terminal.">
+  <meta name="theme-color" content="#ffd84d">
+  <meta property="og:title" content="nb-cli — a creative image studio in your terminal">
+  <meta property="og:description" content="Generate, edit, and art-direct images with Google Gemini Nano Banana models from one focused CLI.">
+  <meta property="og:image" content="https://crapthings.github.io/nb-cli/static/repo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://crapthings.github.io/nb-cli/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd84d'/%3E%3Cpath d='M17 18c4 20 16 28 31 25-8 11-29 8-34-8-2-7-1-13 3-17Z' fill='%23181614'/%3E%3C/svg%3E">
+  <title>nb-cli — a creative image studio in your terminal</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); }
-    .hero-gradient { background: radial-gradient(circle at top right, #f1f2e9 0%, transparent 70%); }
+    :root {
+      --ink: #181614;
+      --paper: #f7f1e6;
+      --yellow: #ffd84d;
+      --yellow-hot: #ffca0a;
+      --lavender: #c9b7ff;
+      --coral: #ff8b6a;
+      --mint: #a9e9cf;
+      --muted: #6c655d;
+      --line: rgba(24, 22, 20, .18);
+      --radius: 22px;
+      --shadow: 7px 7px 0 var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .22;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .nav {
+      min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 950; font-size: 22px; letter-spacing: -.04em; }
+    .brand-icon { width: 38px; height: 38px; display: grid; place-items: center; border: 2px solid var(--ink); border-radius: 50%; background: var(--yellow); box-shadow: 3px 3px 0 var(--ink); font-size: 20px; }
+    .nav-links { display: flex; align-items: center; gap: 24px; font-size: 14px; font-weight: 800; }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+    .button {
+      display: inline-flex; justify-content: center; align-items: center; gap: 9px; min-height: 48px;
+      padding: 0 20px; border: 2px solid var(--ink); border-radius: 999px; background: var(--ink); color: #fff;
+      box-shadow: 4px 4px 0 var(--yellow-hot); font-weight: 900; text-decoration: none;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .button:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--yellow-hot); text-decoration: none !important; }
+    .button.light { background: #fff; color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+
+    .hero { min-height: 760px; display: grid; grid-template-columns: 1.12fr .88fr; gap: 54px; align-items: center; padding: 66px 0 86px; }
+    .edition { display: inline-flex; align-items: center; gap: 9px; font: 800 12px/1 monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .edition::before { content: ""; width: 34px; height: 3px; background: var(--ink); }
+    h1 { margin: 22px 0 22px; max-width: 760px; font-size: clamp(62px, 7.6vw, 112px); line-height: .86; letter-spacing: -.075em; }
+    .highlight { position: relative; display: inline-block; z-index: 0; }
+    .highlight::after { content: ""; position: absolute; left: -.04em; right: -.04em; bottom: .02em; height: .28em; background: var(--yellow); z-index: -1; transform: rotate(-1.4deg); }
+    .lede { max-width: 650px; margin: 0 0 30px; color: var(--muted); font-size: clamp(18px, 2vw, 22px); }
+    .actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .footnote { margin-top: 20px; color: var(--muted); font: 12px/1.4 monospace; }
+
+    .hero-art { position: relative; min-height: 560px; display: grid; place-items: center; }
+    .sun { position: absolute; inset: 4% 0 2% 8%; border: 2px solid var(--ink); border-radius: 48% 52% 55% 45%; background: var(--yellow); transform: rotate(4deg); box-shadow: var(--shadow); }
+    .hero-art img { position: relative; width: min(94%, 520px); aspect-ratio: 1; object-fit: cover; border-radius: 50%; mix-blend-mode: multiply; filter: contrast(1.03) saturate(1.08); }
+    .orbit {
+      position: absolute; display: grid; place-items: center; width: 108px; height: 108px; border: 2px solid var(--ink);
+      border-radius: 50%; background: var(--lavender); box-shadow: 4px 4px 0 var(--ink); text-align: center;
+      font: 900 12px/1.12 monospace; transform: rotate(8deg);
+    }
+    .orbit.one { top: 7%; right: -2%; }
+    .orbit.two { bottom: 1%; left: 1%; width: 92px; height: 92px; background: var(--mint); transform: rotate(-9deg); }
+    .spark { position: absolute; font-size: 42px; font-weight: 900; }
+    .spark.a { left: -1%; top: 20%; transform: rotate(14deg); }
+    .spark.b { right: 5%; bottom: 22%; color: var(--coral); transform: rotate(-10deg); }
+
+    .command-strip { background: var(--ink); color: #fff; border-block: 2px solid var(--ink); }
+    .command-inner { min-height: 88px; display: flex; align-items: center; gap: 18px; }
+    .command-label { flex: 0 0 auto; color: var(--yellow); font: 900 11px/1 monospace; letter-spacing: .09em; text-transform: uppercase; }
+    .command { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: 700 14px/1.4 monospace; }
+    .command .dollar { color: var(--mint); }
+    .copy {
+      flex: 0 0 auto; padding: 10px 14px; border: 1px solid #605d58; border-radius: 999px;
+      background: transparent; color: #fff; cursor: pointer; font: 800 11px/1 monospace; text-transform: uppercase;
+    }
+    .copy:hover { border-color: var(--yellow); color: var(--yellow); }
+
+    .section { padding: 104px 0; }
+    .section-title { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: end; margin-bottom: 44px; }
+    .label { color: #7a6500; font: 900 11px/1 monospace; letter-spacing: .12em; text-transform: uppercase; }
+    h2 { margin: 10px 0 0; font-size: clamp(42px, 5.3vw, 72px); line-height: .92; letter-spacing: -.055em; }
+    .section-title p { margin: 0; max-width: 620px; color: var(--muted); font-size: 18px; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { min-height: 350px; display: flex; flex-direction: column; padding: 28px; border: 2px solid var(--ink); border-radius: var(--radius); background: #fff; box-shadow: 5px 5px 0 var(--ink); }
+    .card:nth-child(2) { background: var(--lavender); }
+    .card:nth-child(3) { background: var(--coral); }
+    .card-top { display: flex; justify-content: space-between; font: 900 11px/1 monospace; text-transform: uppercase; letter-spacing: .06em; }
+    .card-glyph { margin: auto 0 22px; font-size: 64px; line-height: 1; }
+    .card h3 { margin: 0 0 10px; font-size: 28px; letter-spacing: -.035em; }
+    .card p { margin: 0; color: #514b45; }
+
+    .studio { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid var(--ink); border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
+    .studio-copy { padding: clamp(34px, 6vw, 72px); background: var(--yellow); }
+    .studio-copy h2 { max-width: 490px; }
+    .studio-copy p { max-width: 500px; font-size: 18px; }
+    .model-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+    .model-pills span { padding: 9px 12px; border: 1.5px solid var(--ink); border-radius: 999px; background: rgba(255,255,255,.42); font: 800 11px/1 monospace; }
+    .terminal { background: var(--ink); color: #f8f3ea; padding: clamp(32px, 5vw, 64px); display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+    .terminal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 30px; color: #8f8a83; font: 700 11px/1 monospace; }
+    .terminal-head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); box-shadow: 18px 0 0 var(--yellow), 36px 0 0 var(--mint); margin-right: 42px; }
+    .terminal pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.75; }
+    .terminal .comment { color: #8f8a83; }
+    .terminal .bin { color: var(--yellow); }
+    .terminal .string { color: var(--mint); }
+    .terminal .flag { color: #d5c6ff; }
+
+    .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .spec { padding: 30px; border: 2px solid var(--ink); border-radius: 20px; background: #fff; }
+    .spec h3 { margin: 0 0 18px; font-size: 22px; }
+    .scale { display: flex; align-items: end; gap: 10px; min-height: 150px; }
+    .bar { flex: 1; display: grid; place-items: end center; padding-bottom: 12px; border: 1.5px solid var(--ink); border-radius: 8px 8px 3px 3px; background: var(--yellow); font: 900 11px/1 monospace; }
+    .bar:nth-child(1) { height: 48px; }
+    .bar:nth-child(2) { height: 78px; }
+    .bar:nth-child(3) { height: 112px; background: var(--mint); }
+    .bar:nth-child(4) { height: 148px; background: var(--lavender); }
+    .ratios { display: flex; flex-wrap: wrap; gap: 9px; }
+    .ratios span { padding: 10px 13px; border: 1.5px solid var(--ink); border-radius: 8px; font: 800 12px/1 monospace; }
+
+    .skill { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; }
+    .skill-main, .skill-side { padding: clamp(32px, 5vw, 58px); border: 2px solid var(--ink); border-radius: 24px; }
+    .skill-main { background: var(--lavender); box-shadow: var(--shadow); }
+    .skill-side { background: var(--mint); }
+    .skill h2 { font-size: clamp(38px, 4.5vw, 60px); }
+    .skill p { color: #514b45; font-size: 17px; }
+    .skill-command { margin-top: 25px; padding: 16px 18px; border: 2px solid var(--ink); border-radius: 12px; background: var(--ink); color: white; font: 700 12px/1.5 monospace; overflow-wrap: anywhere; }
+    .skill-side ul { margin: 24px 0 0; padding: 0; list-style: none; display: grid; gap: 16px; }
+    .skill-side li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; }
+    .skill-side li::before { content: "↳"; font-weight: 950; }
+
+    .cta { padding: 30px 0 110px; }
+    .cta-inner { padding: clamp(48px, 8vw, 90px) 24px; text-align: center; border: 2px solid var(--ink); border-radius: 28px; background: var(--yellow); box-shadow: var(--shadow); }
+    .cta h2 { max-width: 850px; margin: 10px auto 30px; }
+    .cta-actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    footer { display: flex; justify-content: space-between; gap: 24px; padding: 30px 0 42px; border-top: 2px solid var(--ink); color: var(--muted); font-size: 13px; }
+    footer a { color: var(--ink); font-weight: 800; text-decoration: none; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding-top: 58px; }
+      .hero-art { min-height: 520px; max-width: 680px; width: 100%; margin-inline: auto; }
+      .section-title, .studio, .skill { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: 280px; }
+      .card-glyph { margin-top: 50px; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .nav-links > a:not(.button) { display: none; }
+      .nav .button { min-height: 40px; padding-inline: 14px; }
+      h1 { font-size: 62px; }
+      .hero { min-height: auto; gap: 36px; padding-bottom: 64px; }
+      .hero-art { min-height: 390px; }
+      .orbit { width: 84px; height: 84px; font-size: 10px; }
+      .orbit.two { width: 72px; height: 72px; }
+      .command-label, .copy { display: none; }
+      .command { font-size: 11px; }
+      .section { padding: 78px 0; }
+      .specs { grid-template-columns: 1fr; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .button { transition: none; }
+    }
   </style>
 </head>
-<body class="bg-white text-olive-950 antialiased">
-
-  <!-- Navigation -->
-  <nav class="fixed top-0 w-full z-50 glass border-b border-olive-100">
-    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">🍌</span>
-        <span class="font-bold text-lg tracking-tight text-olive-900">nb-cli</span>
-      </div>
-      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-olive-700">
-        <a href="#features" class="hover:text-olive-500 transition-colors">Features</a>
-        <a href="#usage" class="hover:text-olive-500 transition-colors">Documentation</a>
-        <a href="https://github.com/crapthings/nb-cli" class="flex items-center gap-1 hover:text-olive-900 transition-colors">
-          GitHub
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-        </a>
-      </div>
-      <div class="md:hidden">
-        <!-- Mobile Menu Placeholder -->
-        <span class="text-olive-500">☰</span>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <header class="pt-32 pb-20 px-6 hero-gradient overflow-hidden">
-    <div class="max-w-6xl mx-auto flex flex-col items-center text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-olive-100 text-olive-700 text-xs font-semibold mb-8 border border-olive-200 uppercase tracking-widest">
-        v1.0.4 • Powered by Google Gemini
-      </div>
-      <h1 class="text-5xl md:text-7xl font-extrabold text-olive-900 mb-8 tracking-tight max-w-4xl">
-        AI-Native Image Engineering <span class="text-olive-500">from your CLI.</span>
-      </h1>
-      <p class="text-lg md:text-xl text-olive-600 mb-12 max-w-2xl leading-relaxed">
-        Integrate the power of Nano Banana (Gemini 3.1 Flash Image Preview) directly into your terminal workflow. Create, edit, and optimize images with professional-grade precision.
-      </p>
-      
-      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-lg">
-        <div class="flex-grow flex items-center bg-olive-950 text-olive-100 rounded-lg px-4 py-3 font-mono text-sm group transition-all hover:ring-2 hover:ring-olive-400">
-          <span class="opacity-50 mr-3">$</span>
-          <span class="flex-grow text-left">npm install -g @crapthings/nb-cli</span>
-          <button class="opacity-30 group-hover:opacity-100 transition-opacity ml-4">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+<body>
+  <header class="wrap nav">
+    <a class="brand" href="#top" aria-label="nb-cli home"><span class="brand-icon" aria-hidden="true">🍌</span>nb-cli</a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#tools">Tools</a>
+      <a href="#models">Models</a>
+      <a href="#skill">Agent skill</a>
+      <a class="button" href="https://github.com/crapthings/nb-cli">GitHub ↗</a>
+    </nav>
   </header>
 
-  <!-- Feature Grid -->
-  <section id="features" class="py-24 px-6 bg-olive-50">
-    <div class="max-w-6xl mx-auto">
-      <div class="grid md:grid-cols-3 gap-16">
-        <div class="group">
-          <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-olive-100 flex items-center justify-center mb-6 group-hover:border-olive-300 transition-colors">
-            <svg class="w-6 h-6 text-olive-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-          </div>
-          <h3 class="text-lg font-bold text-olive-900 mb-3">High-Fidelity Generation</h3>
-          <p class="text-olive-600 text-sm leading-relaxed">
-            Leverage Gemini's advanced latent diffusion to generate assets ranging from photorealistic environments to minimalist icons.
-          </p>
-        </div>
-        <div class="group">
-          <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-olive-100 flex items-center justify-center mb-6 group-hover:border-olive-300 transition-colors">
-            <svg class="w-6 h-6 text-olive-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-          </div>
-          <h3 class="text-lg font-bold text-olive-900 mb-3">Semantic Editing</h3>
-          <p class="text-olive-600 text-sm leading-relaxed">
-            Modify existing images using natural language. Update styles, add objects, or change lighting without leaving your terminal.
-          </p>
-        </div>
-        <div class="group">
-          <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-olive-100 flex items-center justify-center mb-6 group-hover:border-olive-300 transition-colors">
-            <svg class="w-6 h-6 text-olive-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m4 0l-5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-          </div>
-          <h3 class="text-lg font-bold text-olive-900 mb-3">Workflow Optimized</h3>
-          <p class="text-olive-600 text-sm leading-relaxed">
-            Support for standard resolutions (512 to 4k), Lite 1K output, and multiple aspect ratios (21:9 to 1:8). Ready for CI/CD and automation scripts.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Code / Usage -->
-  <section id="usage" class="py-24 px-6">
-    <div class="max-w-4xl mx-auto">
-      <div class="mb-16 text-center">
-        <h2 class="text-3xl font-bold text-olive-900 mb-4">CLI Reference</h2>
-        <p class="text-olive-600">Powerful commands designed for intuitive use.</p>
-      </div>
-
-      <div class="space-y-6">
-        <!-- Generate -->
-        <div class="rounded-2xl border border-olive-100 overflow-hidden shadow-sm">
-          <div class="bg-olive-50 px-6 py-3 border-b border-olive-100 flex items-center justify-between">
-            <span class="text-xs font-bold text-olive-700 uppercase tracking-widest">Command: Generate</span>
-            <span class="text-[10px] text-olive-400 font-mono">nb generate [prompt]</span>
-          </div>
-          <div class="p-6 bg-white font-mono text-sm text-olive-800 leading-relaxed overflow-x-auto">
-            <span class="text-olive-400"># Generate a ultra-wide cinematic landscape</span><br>
-            <span class="text-olive-500">nb</span> generate <span class="text-blue-600">"A brutalist concrete library in a misty forest"</span> \<br>
-            &nbsp;&nbsp;--output library.jpg \<br>
-            &nbsp;&nbsp;--aspect-ratio 21:9 \<br>
-            &nbsp;&nbsp;--size 2k
-            <br><br>
-            <span class="text-olive-400"># Use the Lite image model for 1K output</span><br>
-            <span class="text-olive-500">nb</span> generate <span class="text-blue-600">"A playful banana mascot sticker"</span> --model lite
-          </div>
-        </div>
-
-        <!-- Edit -->
-        <div class="rounded-2xl border border-olive-100 overflow-hidden shadow-sm">
-          <div class="bg-olive-50 px-6 py-3 border-b border-olive-100 flex items-center justify-between">
-            <span class="text-xs font-bold text-olive-700 uppercase tracking-widest">Command: Edit</span>
-            <span class="text-[10px] text-olive-400 font-mono">nb edit [file] [prompt]</span>
-          </div>
-          <div class="p-6 bg-white font-mono text-sm text-olive-800 leading-relaxed overflow-x-auto">
-            <span class="text-olive-400"># Modify the previous image</span><br>
-            <span class="text-olive-500">nb</span> edit library.jpg <span class="text-blue-600">"Add warm interior lighting visible through windows"</span> \<br>
-            &nbsp;&nbsp;-o library-edited.jpg
-          </div>
-        </div>
-
-        <!-- Icon -->
-        <div class="rounded-2xl border border-olive-100 overflow-hidden shadow-sm">
-          <div class="bg-olive-50 px-6 py-3 border-b border-olive-100 flex items-center justify-between">
-            <span class="text-xs font-bold text-olive-700 uppercase tracking-widest">Command: Icon</span>
-            <span class="text-[10px] text-olive-400 font-mono">nb icon [prompt]</span>
-          </div>
-          <div class="p-6 bg-white font-mono text-sm text-olive-800 leading-relaxed overflow-x-auto">
-            <span class="text-olive-400"># Generate a 1:1 minimalist vector-style icon</span><br>
-            <span class="text-olive-500">nb</span> icon <span class="text-blue-600">"abstract banana"</span> -o logo.jpg
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Skill Install -->
-  <section class="py-24 px-6 bg-olive-50 border-t border-olive-100">
-    <div class="max-w-4xl mx-auto">
-      <div class="mb-10 text-center">
-        <h2 class="text-3xl font-bold text-olive-900 mb-4">Install The `nb-cli` Skill</h2>
-        <p class="text-olive-600 max-w-2xl mx-auto">
-          If you use Codex skills, install the bundled <code class="bg-white text-olive-800 px-1 rounded">nb-cli</code> skill from this repository so your agent can use the CLI with the repo's prompt guidance and image-generation references.
-        </p>
-      </div>
-
-      <div class="rounded-2xl border border-olive-100 overflow-hidden shadow-sm bg-white mb-8">
-        <div class="bg-olive-950 text-olive-100 px-6 py-4 font-mono text-sm overflow-x-auto">
-          npx skills add https://github.com/crapthings/nb-cli --skill nb-cli
-        </div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="rounded-2xl border border-olive-100 bg-white p-6">
-          <div class="text-xs font-bold text-olive-700 uppercase tracking-widest mb-3">Example Triggers</div>
-          <ul class="space-y-3 text-sm text-olive-700 leading-relaxed">
-            <li><code class="bg-olive-50 text-olive-800 px-1 rounded">Use $nb-cli to generate a 16:9 SaaS hero image with soft daylight and editorial composition</code></li>
-            <li><code class="bg-olive-50 text-olive-800 px-1 rounded">Use $nb-cli to create a minimalist coffee cup icon for my app</code></li>
-            <li><code class="bg-olive-50 text-olive-800 px-1 rounded">Use $nb-cli to edit hero.jpg and change only the background to a warm sunset gradient</code></li>
-          </ul>
-        </div>
-        <div class="rounded-2xl border border-olive-100 bg-white p-6">
-          <div class="text-xs font-bold text-olive-700 uppercase tracking-widest mb-3">Why Install It</div>
-          <ul class="space-y-3 text-sm text-olive-600 leading-relaxed">
-            <li>Use the CLI from agent workflows without leaving the terminal.</li>
-            <li>Reuse the repo's still-image prompt guidance for framing, lighting, composition, and style.</li>
-            <li>Keep image-generation requests aligned with the bundled <code class="bg-olive-50 text-olive-800 px-1 rounded">skills/nb-cli</code> skill.</li>
-          </ul>
-        </div>
-      </div>
-      <p class="text-center text-sm text-olive-500 mt-8">
-        Shout-out to <a href="https://grokfilm.app/" class="underline hover:text-olive-700 transition-colors">grokfilm.app</a>. The bundled still-image technique references were inspired by the film and photography vocabulary collected there.
-      </p>
-    </div>
-  </section>
-
-  <!-- Technical Specs -->
-  <section class="py-24 px-6 border-t border-olive-100">
-    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+  <main id="top">
+    <section class="wrap hero">
       <div>
-        <h2 class="text-3xl font-bold text-olive-900 mb-6">Built for scale.</h2>
-        <p class="text-olive-600 mb-8 leading-relaxed">
-          The <code class="bg-olive-100 text-olive-800 px-1 rounded">nb-cli</code> is built on the latest Node.js runtime and leverages the Gemini API's streaming capabilities for fast response times and efficient resource management.
-        </p>
-        <ul class="space-y-4">
-          <li class="flex items-start gap-3">
-            <div class="mt-1 w-5 h-5 bg-olive-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
-            </div>
-            <div>
-              <span class="block font-bold text-olive-900">StandardJS Compliant</span>
-              <span class="text-sm text-olive-500">Clean, idiomatic codebase following modern JavaScript standards.</span>
-            </div>
-          </li>
-          <li class="flex items-start gap-3">
-            <div class="mt-1 w-5 h-5 bg-olive-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
-            </div>
-            <div>
-              <span class="block font-bold text-olive-900">MIME Type Detection</span>
-              <span class="text-sm text-olive-500">Use `.jpg` filenames for generated and edited images.</span>
-            </div>
-          </li>
-        </ul>
+        <span class="edition">Nano Banana, bottled for the terminal</span>
+        <h1>Your image studio has a <span class="highlight">command line.</span></h1>
+        <p class="lede">Generate, edit, and art-direct images with Google Gemini models—without breaking your creative flow.</p>
+        <div class="actions">
+          <a class="button" href="#install">Install nb-cli ↓</a>
+          <a class="button light" href="https://www.npmjs.com/package/@crapthings/nb-cli">View on npm ↗</a>
+        </div>
+        <p class="footnote">v2.0.0 · Node.js 22+ · MIT licensed · built for humans and agents</p>
       </div>
-      <div class="bg-olive-900 rounded-3xl p-2 shadow-2xl overflow-hidden">
-        <div class="bg-olive-800 rounded-2xl p-8 border border-white/10">
-          <div class="flex gap-2 mb-6">
-            <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
-            <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-            <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
-          </div>
-          <div class="font-mono text-sm space-y-2">
-            <div class="text-olive-400"># Configuration</div>
-            <div class="text-white"><span class="text-olive-500">export</span> GEMINI_API_KEY=your_key</div>
-            <div class="text-olive-400 pt-4"># Verification</div>
-            <div class="text-white"><span class="text-olive-500">nb</span> generate --help</div>
-            <div class="text-olive-300 opacity-60">
-              Usage: nb generate [options] [prompt]<br><br>
-              Options:<br>
-              &nbsp;&nbsp;-o, --output &lt;path&gt;<br>
-              &nbsp;&nbsp;-s, --size &lt;size&gt;<br>
-              &nbsp;&nbsp;-a, --aspect-ratio &lt;ratio&gt;<br>
-              &nbsp;&nbsp;-m, --model &lt;model&gt;
-            </div>
-          </div>
+      <div class="hero-art" aria-label="Friendly banana mascot">
+        <div class="sun"></div>
+        <span class="spark a" aria-hidden="true">✦</span>
+        <img src="static/repo.png" alt="The smiling nb-cli banana mascot">
+        <div class="orbit one">TEXT<br>TO<br>IMAGE</div>
+        <div class="orbit two">UP TO<br>4K</div>
+        <span class="spark b" aria-hidden="true">✺</span>
+      </div>
+    </section>
+
+    <div class="command-strip">
+      <div class="wrap command-inner">
+        <span class="command-label">Try it</span>
+        <code class="command" id="install-command"><span class="dollar">$</span> npm install -g @crapthings/nb-cli</code>
+        <button class="copy" type="button" data-copy="npm install -g @crapthings/nb-cli">Copy</button>
+      </div>
+    </div>
+
+    <section class="wrap section" id="tools">
+      <div class="section-title">
+        <div><span class="label">Three focused tools</span><h2>Create. Change. Ship.</h2></div>
+        <p>nb-cli turns Gemini's image models into predictable terminal commands for new visuals, precise edits, and clean app icons.</p>
+      </div>
+      <div class="cards">
+        <article class="card"><div class="card-top"><span>01 / GENERATE</span><span>↗</span></div><div class="card-glyph" aria-hidden="true">✦</div><h3>Start from words</h3><p>Turn a prompt into production-ready artwork with explicit size and aspect-ratio controls.</p></article>
+        <article class="card"><div class="card-top"><span>02 / EDIT</span><span>↗</span></div><div class="card-glyph" aria-hidden="true">◒</div><h3>Edit with intent</h3><p>Bring an existing image and describe the exact change in natural language.</p></article>
+        <article class="card"><div class="card-top"><span>03 / ICON</span><span>↗</span></div><div class="card-glyph" aria-hidden="true">⌘</div><h3>Make the mark</h3><p>Generate a focused 1:1 icon with prompt guidance tailored to simple visual identities.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap section" id="models">
+      <div class="studio">
+        <div class="studio-copy">
+          <span class="label">Direct the model</span>
+          <h2>Fast drafts or full-resolution detail.</h2>
+          <p>Choose the model that fits the moment. Use Lite for fast 1K exploration, or the default Gemini image model for richer output up to 4K.</p>
+          <div class="model-pills"><span>DEFAULT · GEMINI IMAGE</span><span>LITE · FAST 1K</span><span>512 → 4K</span></div>
+        </div>
+        <div class="terminal" aria-label="nb-cli command examples">
+          <div class="terminal-head">creative-session — zsh</div>
+          <pre><span class="comment"># Generate a cinematic wide image</span>
+<span class="bin">nb</span> generate <span class="string">"a glass pavilion in a pine forest"</span> \
+  <span class="flag">--size 2k --aspect-ratio 16:9</span> \
+  <span class="flag">--output pavilion.jpg</span>
+
+<span class="comment"># Change only the atmosphere</span>
+<span class="bin">nb</span> edit pavilion.jpg \
+  <span class="string">"replace daylight with blue hour"</span> \
+  <span class="flag">--output pavilion-blue.jpg</span>
+
+<span class="comment"># Fast 1K concept</span>
+<span class="bin">nb</span> generate <span class="string">"playful banana sticker"</span> <span class="flag">--model lite</span></pre>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
-  <footer class="py-20 px-6 bg-white border-t border-olive-100">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-      <div class="flex items-center gap-2">
-        <span class="text-xl">🍌</span>
-        <span class="font-bold text-olive-900">nb-cli</span>
+    <section class="wrap section">
+      <div class="section-title">
+        <div><span class="label">Shape the frame</span><h2>Built for real deliverables.</h2></div>
+        <p>From app icons to ultrawide hero art, choose a useful resolution and a composition that already fits its destination.</p>
       </div>
-      <div class="text-olive-400 text-sm">
-        Released under the MIT License. © 2026.
+      <div class="specs">
+        <article class="spec"><h3>Resolution</h3><div class="scale" aria-label="Supported resolutions"><div class="bar">512</div><div class="bar">1K</div><div class="bar">2K</div><div class="bar">4K</div></div></article>
+        <article class="spec"><h3>Aspect ratios</h3><div class="ratios"><span>21:9</span><span>16:9</span><span>4:3</span><span>3:2</span><span>1:1</span><span>4:5</span><span>3:4</span><span>9:16</span><span>1:4</span><span>1:8</span></div></article>
       </div>
-      <div class="flex gap-6">
-        <a href="https://github.com/crapthings/nb-cli" class="text-olive-400 hover:text-olive-900 transition-colors">Source</a>
-        <a href="https://standardjs.com/" class="text-olive-400 hover:text-olive-900 transition-colors">Style</a>
+    </section>
+
+    <section class="wrap section" id="skill">
+      <div class="skill">
+        <div class="skill-main">
+          <span class="label">For coding agents</span>
+          <h2>Give your agent an art department.</h2>
+          <p>The bundled Codex skill teaches agents how to frame prompts, choose image parameters, and use nb-cli inside a project workflow.</p>
+          <div class="skill-command">npx skills add https://github.com/crapthings/nb-cli --skill nb-cli</div>
+        </div>
+        <aside class="skill-side">
+          <span class="label">Ask it naturally</span>
+          <ul>
+            <li>Generate a 16:9 SaaS hero with soft editorial light.</li>
+            <li>Create a minimalist coffee cup icon for my app.</li>
+            <li>Edit hero.jpg and change only the background.</li>
+          </ul>
+        </aside>
       </div>
-    </div>
+    </section>
+
+    <section class="wrap cta" id="install">
+      <div class="cta-inner">
+        <span class="label">Your next image starts here</span>
+        <h2>Stay in the terminal. Make something visual.</h2>
+        <div class="cta-actions">
+          <a class="button" href="https://www.npmjs.com/package/@crapthings/nb-cli">Install from npm ↗</a>
+          <a class="button light" href="https://aistudio.google.com/app/apikey">Get a Gemini API key ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <span>nb-cli 🍌 · open source under the MIT License</span>
+    <span><a href="https://github.com/crapthings/nb-cli">GitHub</a> · <a href="https://www.npmjs.com/package/@crapthings/nb-cli">npm</a> · <a href="https://aistudio.google.com/app/apikey">Google AI Studio</a></span>
   </footer>
 
+  <script>
+    document.querySelector('.copy').addEventListener('click', async (event) => {
+      try {
+        await navigator.clipboard.writeText(event.currentTarget.dataset.copy)
+        event.currentTarget.textContent = 'Copied!'
+        setTimeout(() => { event.currentTarget.textContent = 'Copy' }, 1600)
+      } catch {
+        event.currentTarget.textContent = 'Select & copy'
+      }
+    })
+  </script>
 </body>
 </html>
