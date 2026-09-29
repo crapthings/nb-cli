@@ -8,21 +8,6 @@
 
 ---
 
-## Releasing (maintainers)
-
-Write the changes for the next release under `## [Unreleased]` in `CHANGELOG.md`, then run:
-
-```bash
-npm run release -- patch --dry-run # Check without modifying files or publishing
-npm run release -- patch           # Bump the patch version and publish
-```
-
-Run these commands from the repository checkout after `npm install`. Use `minor`, `major`, or an explicit stable version instead of `patch`. Version 2.0.0 has been published; the next patch release is 2.0.1.
-
-The command checks npm login and whether the version is already published, runs lint and tests, and previews the package contents. It then updates `package.json`, `package-lock.json`, and the changelog date before publishing with public access. Complete npm authentication prompts if requested. The dry run previews the package at its current version.
-
-Review your working tree before releasing: the command publishes local files and does not commit, tag, or push Git changes. If publishing fails after the version update, fix the reported issue and retry with `npm publish --access public` without bumping again.
-
 ## 🌟 Overview
 
 `nb-cli` is a lightweight command-line interface for **Nano Banana** Gemini image models. It allows you to create high-quality images from text prompts and perform sophisticated image editing by providing natural language instructions alongside an existing image.
@@ -33,19 +18,8 @@ Use `.jpg` output filenames when you pass `-o`. If you omit the extension, `nb-c
 
 ### 1. Prerequisites
 
-- [Node.js](https://nodejs.org/) (22.12+ within v22, v24, or v26+; Node 23 and 25 are not supported by Nanoid 6)
+- [Node.js](https://nodejs.org/) (v22.12+ within v22, v24, or v26+)
 - [Google Gemini API Key](https://aistudio.google.com/app/apikey)
-
-### Upgrading from 1.x to 2.0
-
-Version 2.0.0 raises the supported Node.js versions to match its upgraded dependencies. Update Node.js to a supported version above, then install the release:
-
-```bash
-npm install -g @crapthings/nb-cli@2.0.0
-nb --version
-```
-
-The `generate`, `edit`, and `icon` commands and `GEMINI_API_KEY` configuration remain unchanged. The Google GenAI SDK 2.x integration has been verified with offline generation/editing tests and a live Lite image generation request. See [the changelog](CHANGELOG.md#200---2026-09-29) for the release details.
 
 ### 2. Installation
 
