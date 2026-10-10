@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { expect } from 'chai'
-import { DEFAULT_MODEL, LITE_MODEL, generateImage, editImage } from '../src/api.js'
+import { DEFAULT_MODEL, LITE_MODEL, NANO_BANANA_21_MODEL, generateImage, editImage } from '../src/api.js'
 
 describe('Google SDK compatibility', () => {
   let directory
@@ -42,11 +42,23 @@ describe('Google SDK compatibility', () => {
     expect(request.body.contents).to.deep.equal([{ role: 'user', parts: [{ text: 'A banana' }] }])
     expect(request.body.generationConfig).to.deep.equal({
       thinkingConfig: { thinkingLevel: 'MINIMAL' },
-      imageConfig: { imageSize: '0.5K', aspectRatio: '16:9' },
+      imageConfig: { imageSize: '1K', aspectRatio: '16:9' },
       responseModalities: ['IMAGE']
     })
     expect(output).to.equal(path.join(directory, 'generated.jpg'))
     expect(fs.readFileSync(output)).to.deep.equal(image)
+  })
+
+  it('sends Nano Banana 2.1 generation and edit requests through the SDK', async () => {
+    await generateImage('A banana', path.join(directory, 'banana21'), { model: 'nano-banana-2.1', size: '4k' })
+    expect(request.url).to.include(`${NANO_BANANA_21_MODEL}:generateContent`)
+    expect(request.body.generationConfig.imageConfig).to.deep.equal({ imageSize: '4K' })
+    const input = path.join(directory, 'input.jpg')
+    fs.writeFileSync(input, image)
+    await editImage(input, 'Make it blue', path.join(directory, 'edited21'), { model: 'nano-banana-2.1' })
+    expect(request.url).to.include(`${NANO_BANANA_21_MODEL}:generateContent`)
+    expect(request.body.generationConfig.imageConfig).to.deep.equal({ imageSize: '1K' })
+    expect(request.body.contents[0].parts[1].inlineData.mimeType).to.equal('image/jpeg')
   })
 
   it('serializes an edit image and resolves the lite model configuration', async () => {

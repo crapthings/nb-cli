@@ -20,8 +20,9 @@ Example trigger requests:
 ### 1. Image Generation
 Turn prompts into visuals using `nb generate <prompt>`.
 - Use `-o, --output <path>` for a specific path (otherwise generates a random 6-char `.jpg` filename).
-- Use `-s, --size <size>` to set resolution (`512` (default), `1k`, `2k`, `4k`).
+- Use `-s, --size <size>` to set resolution (`1k` (default), `2k`, `4k`; `512` requires `--model nano-banana-2`).
 - Use `-a, --aspect-ratio <ratio>` for your desired format (e.g., `16:9`, `21:9`).
+- The default model is Nano Banana 2.1. Use `--model nano-banana-2.1` for `gemini-nano-banana-2.1`; it defaults to `1k` and supports `1k`, `2k`, and `4k` only.
 - Use `-m, --model <model>` to pick a model alias or ID. Use `lite` for `gemini-3.1-flash-lite-image`; Lite supports `1k` output only.
 
 ### 2. Icon Generation

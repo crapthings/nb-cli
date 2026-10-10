@@ -1,6 +1,6 @@
 {
   "name": "@crapthings/nb-cli",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Nano Banana (Google Gemini Image) CLI Tool",
   "bin": {
     "nb": "bin/nb.js"
@@ -29,6 +29,7 @@
     "gemini",
     "image-generation",
     "nano-banana-2.0",
+    "nano-banana-2.1",
     "nano-banana-pro",
     "nano-banana",
     "nanobanana"
@@ -40,15 +41,15 @@
     "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
   },
   "dependencies": {
-    "@google/genai": "^2.24.0",
+    "@google/genai": "^2.28.0",
     "commander": "^15.0.0",
-    "dotenv": "^18.0.4",
+    "dotenv": "^18.0.7",
     "mime": "^4.1.0",
-    "nanoid": "^6.0.1"
+    "nanoid": "^6.0.2"
   },
   "devDependencies": {
-    "chai": "^6.2.2",
-    "mocha": "^12.0.2",
+    "chai": "^6.3.0",
+    "mocha": "^12.0.3",
     "standard": "^17.1.2"
   },
   "standard": {

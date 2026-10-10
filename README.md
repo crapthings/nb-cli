@@ -68,6 +68,13 @@ Use the lower-latency Lite image model when you only need 1K output:
 nb generate "A playful banana mascot sticker" -o mascot.jpg --model lite
 ```
 
+Use [Nano Banana 2.1](https://ai.google.dev/gemini-api/docs/models/gemini-nano-banana-2.1) by default for generation or editing; you can also select it with `--model nano-banana-2.1` (full ID: `gemini-nano-banana-2.1`). It defaults to 1K and supports 1K, 2K, and 4K output; 512 output is not supported. Use `--model nano-banana-2` to select the previous model, which supports 512 output.
+
+```bash
+nb generate "A playful banana mascot sticker" -o mascot-21 --model nano-banana-2.1 -s 2k
+nb edit source.jpg "Make it blue" -o edited-21 --model nano-banana-2.1
+```
+
 ### Generate an Icon
 Generate a 1:1 minimalist icon for a given prompt. This command automatically adds icon-specific keywords to your prompt.
 
@@ -115,9 +122,9 @@ Shout-out to [grokfilm.app](https://grokfilm.app/). The still-image technique re
 | Option | Short | Description | Default |
 | --- | --- | --- | --- |
 | `--output` | `-o` | Path to save the resulting image. Use a `.jpg` filename, or omit the extension to use the model's native format automatically. | `6-char-nanoid.jpg` |
-| `--size` | `-s` | Image resolution (512, 1k, 2k, 4k) | 512 |
-| `--aspect-ratio`| `-a` | Image aspect ratio (21:9, 16:9, 1:1, etc.) | 1:1 |
-| `--model` | `-m` | Model alias or ID. Use `lite` for `gemini-3.1-flash-lite-image`; Lite supports 1K output only. | `gemini-3.1-flash-image-preview` |
+| `--size` | `-s` | Image resolution (1k, 2k, 4k; 512 with `nano-banana-2`) | 1k |
+| `--aspect-ratio`| `-a` | Image aspect ratio (21:9, 16:9, 1:1, etc.); icon always uses 1:1 | Model-selected |
+| `--model` | `-m` | Model alias or ID. Use `nano-banana-2.1` for Nano Banana 2.1 (1K default; 1K/2K/4K). Use `lite` for `gemini-3.1-flash-lite-image`; Lite supports 1K output only. | `gemini-nano-banana-2.1` |
 
 #### Supported Aspect Ratios
 Ordered by the leading dimension (width) from largest to smallest:

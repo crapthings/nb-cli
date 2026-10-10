@@ -3,14 +3,17 @@ import path from 'node:path'
 import { GoogleGenAI } from '@google/genai'
 import mime from 'mime'
 
-const DEFAULT_MODEL = 'gemini-3.1-flash-image-preview'
+const NANO_BANANA_21_MODEL = 'gemini-nano-banana-2.1'
+const DEFAULT_MODEL = NANO_BANANA_21_MODEL
 const LITE_MODEL = 'gemini-3.1-flash-lite-image'
 
 const MODEL_ALIASES = new Map([
   ['default', DEFAULT_MODEL],
-  ['flash', DEFAULT_MODEL],
+  ['flash', 'gemini-3.1-flash-image-preview'],
   ['nano-banana', DEFAULT_MODEL],
-  ['nano-banana-2', DEFAULT_MODEL],
+  ['nano-banana-2', 'gemini-3.1-flash-image-preview'],
+  ['nano-banana-2.1', NANO_BANANA_21_MODEL],
+  ['nanobanana-2.1', NANO_BANANA_21_MODEL],
   ['lite', LITE_MODEL],
   ['flash-lite', LITE_MODEL],
   ['nano-banana-lite', LITE_MODEL]
@@ -100,7 +103,7 @@ function getClient () {
 
 function normalizeImageSize (size, model = DEFAULT_MODEL) {
   let imageSize = '0.5K'
-  if (model === LITE_MODEL) {
+  if (model === LITE_MODEL || model === NANO_BANANA_21_MODEL) {
     imageSize = '1K'
   }
 
@@ -112,6 +115,10 @@ function normalizeImageSize (size, model = DEFAULT_MODEL) {
 
   if (model === LITE_MODEL && imageSize !== '1K') {
     throw new Error(`${LITE_MODEL} only supports 1K image output. Use --size 1k or omit --size.`)
+  }
+
+  if (model === NANO_BANANA_21_MODEL && !['1K', '2K', '4K'].includes(imageSize)) {
+    throw new Error(`${NANO_BANANA_21_MODEL} only supports 1K, 2K, or 4K image output. Use --size 1k, 2k, or 4k, or omit --size.`)
   }
 
   return imageSize
@@ -257,6 +264,7 @@ async function editImage (inputPath, prompt, outputPath, options = {}) {
 
 export {
   DEFAULT_MODEL,
+  NANO_BANANA_21_MODEL,
   LITE_MODEL,
   detectImageExtension,
   getInputMimeType,

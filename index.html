@@ -135,10 +135,9 @@
     .spec h3 { margin: 0 0 18px; font-size: 22px; }
     .scale { display: flex; align-items: end; gap: 10px; min-height: 150px; }
     .bar { flex: 1; display: grid; place-items: end center; padding-bottom: 12px; border: 1.5px solid var(--ink); border-radius: 8px 8px 3px 3px; background: var(--yellow); font: 900 11px/1 monospace; }
-    .bar:nth-child(1) { height: 48px; }
-    .bar:nth-child(2) { height: 78px; }
-    .bar:nth-child(3) { height: 112px; background: var(--mint); }
-    .bar:nth-child(4) { height: 148px; background: var(--lavender); }
+    .bar:nth-child(1) { height: 78px; }
+    .bar:nth-child(2) { height: 112px; background: var(--mint); }
+    .bar:nth-child(3) { height: 148px; background: var(--lavender); }
     .ratios { display: flex; flex-wrap: wrap; gap: 9px; }
     .ratios span { padding: 10px 13px; border: 1.5px solid var(--ink); border-radius: 8px; font: 800 12px/1 monospace; }
 
@@ -211,7 +210,7 @@
           <a class="button" href="#install">Install nb-cli ↓</a>
           <a class="button light" href="https://www.npmjs.com/package/@crapthings/nb-cli">View on npm ↗</a>
         </div>
-        <p class="footnote">v2.0.0 · Node.js 22+ · MIT licensed · built for humans and agents</p>
+        <p class="footnote">v2.1.0 · Node.js 22+ · MIT licensed · built for humans and agents</p>
       </div>
       <div class="hero-art" aria-label="Friendly banana mascot">
         <div class="sun"></div>
@@ -248,8 +247,8 @@
         <div class="studio-copy">
           <span class="label">Direct the model</span>
           <h2>Fast drafts or full-resolution detail.</h2>
-          <p>Choose the model that fits the moment. Use Lite for fast 1K exploration, or the default Gemini image model for richer output up to 4K.</p>
-          <div class="model-pills"><span>DEFAULT · GEMINI IMAGE</span><span>LITE · FAST 1K</span><span>512 → 4K</span></div>
+          <p>Choose the model that fits the moment. Nano Banana 2.1 is the default, with 1K output and support for 2K and 4K. Use Lite for fast 1K exploration, or select nano-banana-2 for 512 drafts.</p>
+          <div class="model-pills"><span>DEFAULT · NANO BANANA 2.1</span><span>LITE · FAST 1K</span><span>1K → 4K</span></div>
         </div>
         <div class="terminal" aria-label="nb-cli command examples">
           <div class="terminal-head">creative-session — zsh</div>
@@ -275,7 +274,7 @@
         <p>From app icons to ultrawide hero art, choose a useful resolution and a composition that already fits its destination.</p>
       </div>
       <div class="specs">
-        <article class="spec"><h3>Resolution</h3><div class="scale" aria-label="Supported resolutions"><div class="bar">512</div><div class="bar">1K</div><div class="bar">2K</div><div class="bar">4K</div></div></article>
+        <article class="spec"><h3>Resolution</h3><div class="scale" aria-label="Nano Banana 2.1 resolutions"><div class="bar">1K</div><div class="bar">2K</div><div class="bar">4K</div></div></article>
         <article class="spec"><h3>Aspect ratios</h3><div class="ratios"><span>21:9</span><span>16:9</span><span>4:3</span><span>3:2</span><span>1:1</span><span>4:5</span><span>3:4</span><span>9:16</span><span>1:4</span><span>1:8</span></div></article>
       </div>
     </section>

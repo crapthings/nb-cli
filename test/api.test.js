@@ -2,6 +2,7 @@ import { expect } from 'chai'
 import {
   DEFAULT_MODEL,
   LITE_MODEL,
+  NANO_BANANA_21_MODEL,
   detectImageExtension,
   getInputMimeType,
   normalizeImageSize,
@@ -42,11 +43,24 @@ describe('API helpers', () => {
   })
 
   it('uses the default Gemini image model when no model is requested', () => {
+    expect(DEFAULT_MODEL).to.equal('gemini-nano-banana-2.1')
     expect(resolveModel()).to.equal(DEFAULT_MODEL)
     expect(resolveImageOptions({})).to.deep.equal({
       model: DEFAULT_MODEL,
-      imageSize: '0.5K'
+      imageSize: '1K'
     })
+  })
+
+  it('resolves Nano Banana 2.1 aliases and validates its output sizes', () => {
+    for (const model of ['nano-banana-2.1', 'nanobanana-2.1', NANO_BANANA_21_MODEL]) {
+      expect(resolveImageOptions({ model })).to.deep.equal({ model: NANO_BANANA_21_MODEL, imageSize: '1K' })
+      for (const size of ['1k', '2k', '4k']) {
+        expect(resolveImageOptions({ model, size }).imageSize).to.equal(size.toUpperCase())
+      }
+      for (const size of ['512', '0.5k', '8k']) {
+        expect(() => resolveImageOptions({ model, size })).to.throw('only supports 1K, 2K, or 4K')
+      }
+    }
   })
 
   it('resolves the lite model alias to Gemini Flash Lite Image', () => {
@@ -64,8 +78,14 @@ describe('API helpers', () => {
     })
   })
 
+  it('preserves Nano Banana 2 aliases and 512 output', () => {
+    for (const model of ['flash', 'nano-banana-2']) {
+      expect(resolveImageOptions({ model })).to.deep.equal({ model: 'gemini-3.1-flash-image-preview', imageSize: '0.5K' })
+    }
+  })
+
   it('normalizes numeric image sizes', () => {
-    expect(normalizeImageSize('512')).to.equal('0.5K')
+    expect(normalizeImageSize('512', 'gemini-3.1-flash-image-preview')).to.equal('0.5K')
     expect(normalizeImageSize('1024')).to.equal('1K')
   })
 

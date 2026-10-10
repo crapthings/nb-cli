@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-10
+
+### Changed
+- **Default Image Model**: Generate, edit, and icon commands now use `gemini-nano-banana-2.1` (Nano Banana 2.1) by default with 1K output. Use `--model nano-banana-2` or `--model flash` for the previous model and 512 output.
+- **Updated Dependencies**: Upgraded `@google/genai` to `^2.28.0`, `chai` to `^6.3.0`, `dotenv` to `^18.0.7`, `mocha` to `^12.0.3`, and `nanoid` to `^6.0.2`.
+- **Documentation**: Updated CLI help, README, bundled skill, and website model and resolution guidance.
+
+### Added
+- **Nano Banana 2.1 Selection**: Added `nano-banana-2.1` and `nanobanana-2.1` aliases, with validation for 1K, 2K, and 4K output before sending requests.
+- **Regression Coverage**: Verified the new default, legacy model aliases, resolution validation, and SDK generation and editing request serialization. Live Nano Banana 2.1 requests also succeeded for default 1K, 2K, and 4K generation and default image editing (JPEG responses).
+
 ## [2.0.0] - 2026-09-29
 
 ### Breaking Changes
